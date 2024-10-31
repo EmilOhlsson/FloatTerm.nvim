@@ -1,0 +1,24 @@
+*float-term.txt*
+
+FloatTerm is a simple floating terminal. Run `:FloatTerm` to toggle terminal
+
+================================================================================
+SETUP							*float-term-setup*
+
+From lua context, run
+>
+	local float_term = require('FloatTerm')
+	float_term.setup({
+		window_config = {
+			border = 'shadow',
+			title = 'FloatTerm',
+			title_pos = 'left',
+		},
+		pad_vertical = 5,
+		pad_horizontal = 10,
+	})
+
+The above values are the default values. `window_config` is used as a basis
+for creating the terminal window
+
+vim:tw=78:ts=8:et:ft=help:norl:
