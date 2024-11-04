@@ -53,7 +53,7 @@ local function create_window()
     end
 end
 
-local function toggle_window()
+function M.toggle_window()
     -- Windows can't easily be moved between tab pages, so windows
     -- are toggled by closing, and recreated. The buffer contains
     -- the running terminal, which is re-used if it is still running
@@ -89,7 +89,7 @@ function M.setup(config)
     -- Create the actual user command
     vim.api.nvim_create_user_command('FloatTerm',
         function(_)
-            toggle_window()
+            M.toggle_window()
         end, {
         })
 end

@@ -21,4 +21,15 @@ From lua context, run
 The above values are the default values. `window_config` is used as a basis
 for creating the terminal window
 
+Background color can be configured by setting highlight for `NormalFloat`
+
+================================================================================
+API  							*float-term-api*
+
+FloatTerm has a really simple API consisting of two functions:
+
+`setup()` - Set up FloatTerm, se parameters under |float-term-setup|
+
+`toggle_window()` - Show/hide the floating terminal. Does not take a parameter
+
 vim:tw=78:ts=8:et:ft=help:norl:
