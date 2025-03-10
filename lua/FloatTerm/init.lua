@@ -6,9 +6,9 @@ local buffer = nil
 local v_pad
 local h_pad
 
--- Create a terminal window
---
--- Set up the window with buffer, terminal, and sets size
+--- Create a terminal window
+---
+--- Set up the window with buffer, terminal, and sets size
 local function create_window()
     local spawn_terminal = false
     if buffer == nil then
@@ -16,30 +16,31 @@ local function create_window()
         spawn_terminal = true
     end
 
+    -- Window configuration values, these will be merged with
+    -- user provided configuration
     local window_config = {
         relative = 'editor',
         row = v_pad,
         col = h_pad,
         width = vim.o.columns - 2 * h_pad,
         height = vim.o.lines - 2 * v_pad,
-        -- A lot of cool
-        -- config available,
-        -- like shadow etc
+        style = 'minimal',
     }
     local actual_config = vim.tbl_deep_extend('force',
         base_window_config, window_config);
     window = vim.api.nvim_open_win(buffer, true, actual_config)
 
     -- Configure created window
-    local scope = { scope = 'local', win = window }
-    vim.api.nvim_set_option_value('relativenumber', false, scope)
-    vim.api.nvim_set_option_value('number', false, scope)
-    vim.api.nvim_set_option_value('signcolumn', 'no', scope)
-    vim.api.nvim_set_option_value('cursorline', false, scope)
+    vim.api.nvim_create_autocmd("WinClosed", {
+        buffer = buffer,
+        callback = function()
+            window = nil
+        end,
+    })
 
     if spawn_terminal then
         -- Spawn terminal in current buffer
-        local _ = vim.fn.termopen(vim.env.SHELL or '/bin/sh', {
+        local _ = vim.fn.termopen(vim.o.shell or '/bin/sh', {
             ---@param job_id integer    Job ID that exited
             ---@param exit_code integer Terminal exit code
             ---@param event_type string The string "exit"
@@ -53,6 +54,12 @@ local function create_window()
     end
 end
 
+--- Toggle the floating terminal window
+---
+--- If the window is currently visible, it will be closed.
+--- If the window is not visible, it will be created and shown.
+--- The terminal buffer is preserved between toggles, allowing you
+--- to maintain your terminal session state.
 function M.toggle_window()
     -- Windows can't easily be moved between tab pages, so windows
     -- are toggled by closing, and recreated. The buffer contains
@@ -65,11 +72,14 @@ function M.toggle_window()
     end
 end
 
+--- Setup FloatTerm
+---
 ---@param config any Setup arguments from vim script
 function M.setup(config)
     config = config or {}
     local default_window_config = {
         border = 'shadow',
+        style = 'minimal',
         title = 'FloatTerm',
         title_pos = 'left',
     }
@@ -90,8 +100,7 @@ function M.setup(config)
     vim.api.nvim_create_user_command('FloatTerm',
         function(_)
             M.toggle_window()
-        end, {
-        })
+        end, {})
 end
 
 return M
