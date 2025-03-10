@@ -74,33 +74,39 @@ end
 
 --- Setup FloatTerm
 ---
----@param config any Setup arguments from vim script
+---@param config table|nil Setup arguments, with following fields
+--- - pad_vertical: number|nil - vertical padding
+--- - pad_horizontal: number|nil - horizontal padding
+--- - window_config: table|nil - see nvim_open_win
 function M.setup(config)
     config = config or {}
-    local default_window_config = {
-        border = 'shadow',
-        style = 'minimal',
-        title = 'FloatTerm',
-        title_pos = 'left',
-    }
+
+    vim.validate({
+        config = { config, 'table' },
+        pad_vertical = { config.pad_vertical, 'number', true },
+        pad_horizontal = { config.pad_horizontal, 'number', true},
+        window_config = { config.window_config, 'table', true},
+    })
+
+    v_pad = tonumber(config.pad_vertical) or 5
+    h_pad = tonumber(config.pad_horizontal) or 10
 
     -- Setup base config used when creating window
-    if config.window_config ~= nil then
-        assert(type(config.window_config) == 'table',
-            "Window config need to be a table")
-        default_window_config = vim.tbl_deep_extend('force',
-            default_window_config, config.window_config)
-    end
-    base_window_config = default_window_config
-
-    v_pad = config.pad_vertical or 5
-    h_pad = config.pad_horizontal or 10
+    base_window_config = vim.tbl_deep_extend('force', {
+            border = 'shadow',
+            style = 'minimal',
+            title = 'FloatTerm',
+            title_pos = 'left',
+        },
+        config.window_config or {})
 
     -- Create the actual user command
     vim.api.nvim_create_user_command('FloatTerm',
-        function(_)
-            M.toggle_window()
-        end, {})
+    function(_)
+        M.toggle_window()
+    end, {
+    desc = "Toggle floating terminal window",
+})
 end
 
 return M
