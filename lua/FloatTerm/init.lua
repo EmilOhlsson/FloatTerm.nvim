@@ -81,12 +81,10 @@ end
 function M.setup(config)
     config = config or {}
 
-    vim.validate({
-        config = { config, 'table' },
-        pad_vertical = { config.pad_vertical, 'number', true },
-        pad_horizontal = { config.pad_horizontal, 'number', true},
-        window_config = { config.window_config, 'table', true},
-    })
+    vim.validate('config', config, 'table')
+    vim.validate('pad_vertical', config.pad_vertical, 'number', true)
+    vim.validate('pad_horizontal', config.pad_horizontal, 'number', true)
+    vim.validate('window_config', config.window_config, 'table', true)
 
     v_pad = tonumber(config.pad_vertical) or 5
     h_pad = tonumber(config.pad_horizontal) or 10
